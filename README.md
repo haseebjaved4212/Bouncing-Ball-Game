@@ -18,7 +18,7 @@ This is a simple yet engaging bouncing ball game where players use a paddle to k
 
 ## Preview
 
-- [Play the game]()
+- [Play the game](https://haseebjaved4212.github.io/Bouncing-Ball-Game/)
 
 
 ##  Getting Started
