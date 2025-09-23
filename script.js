@@ -4,6 +4,10 @@ const ctx = canvas.getContext("2d");
 const messageBox = document.getElementById("messageBox");
 const startButton = document.getElementById("startButton");
 
+// NEW: on-screen control buttons (for touch / non-keyboard devices)
+const leftBtn = document.getElementById("leftBtn");
+const rightBtn = document.getElementById("rightBtn");
+
 // Game state variables
 let gameRunning = false;
 let gameOver = false;
@@ -74,6 +78,38 @@ document.addEventListener("keyup", (e) => {
     leftPressed = false;
   }
 });
+
+// NEW: pointer/touch/click handlers for on-screen buttons
+function setupControlButtons() {
+  if (!leftBtn || !rightBtn) return;
+
+  const stepOnTap = 20; // single-tap move amount
+
+  function attachHandlers(el, setFlag, moveDelta) {
+    // pointer events give unified support for mouse/touch/stylus
+    el.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      setFlag(true);
+    }, { passive: false });
+
+    el.addEventListener("pointerup", (e) => {
+      e.preventDefault();
+      setFlag(false);
+    }, { passive: false });
+
+    el.addEventListener("pointercancel", () => setFlag(false));
+    el.addEventListener("pointerleave", () => setFlag(false));
+
+    // single tap/click should also move a step (useful for quick taps)
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      paddle.x = Math.max(0, Math.min(canvas.width - paddle.width, paddle.x + moveDelta));
+    }, { passive: false });
+  }
+
+  attachHandlers(leftBtn, (v) => (leftPressed = v), -stepOnTap);
+  attachHandlers(rightBtn, (v) => (rightPressed = v), stepOnTap);
+}
 
 // Function to handle the game over state
 function handleGameOver() {
@@ -161,3 +197,6 @@ function startGame() {
 
 // Event listener for the start button
 startButton.addEventListener("click", startGame);
+
+// initialize on-screen controls
+setupControlButtons();
